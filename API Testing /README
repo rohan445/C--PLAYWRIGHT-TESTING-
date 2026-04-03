@@ -1,0 +1,17 @@
+📘 API Testing Guide (Playwright + xUnit + Postgres)
+🧠 Overview
+
+This project demonstrates API Testing using Playwright with xUnit.
+The goal is to validate backend functionality by sending HTTP requests and verifying responses, without relying on UI.
+
+🎯 Objectives
+Validate REST API endpoints (GET, POST, PUT, DELETE)
+Verify response status codes and data integrity
+Ensure backend functionality works as expected
+Support scalable and maintainable test structure
+
+🧰 Tech Stack
+Playwright (.NET) → API request handling
+xUnit → Test framework
+C# → Programming language
+Postgres SQL → DBMS 
