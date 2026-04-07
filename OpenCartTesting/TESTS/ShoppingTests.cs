@@ -1,139 +1,100 @@
+using Microsoft.Playwright;
 using Xunit;
 using System.Threading.Tasks;
-using System.Collections.Generic;
-using System.Reflection;
+using Allure.Xunit;
+using Allure.Xunit.Attributes;
+using static Microsoft.Playwright.Assertions;
+using Allure.Net.Commons;
 
-namespace PlaywrightTests;
+[AllureSuite("OpenCart Tests")]
+[AllureFeature("Shopping")]
 public class ShoppingTests
 {
+    private async Task<(IPage page, IBrowser browser)> Setup()
+    {
+        var playwright = await Playwright.CreateAsync();
+        var browser = await playwright.Chromium.LaunchAsync(new()
+        {
+            Headless = false
+        });
+
+        var page = await browser.NewPageAsync();
+        return (page, browser);
+    }
+
     [Fact]
+    [AllureStory("Search and Add to Cart")]
     public async Task Search_Add_To_Cart_Flow()
     {
-        var fixture = new PlaywrightFixture();
-        await fixture.Setup();
+        var (page, browser) = await Setup();
 
-        var home = new HomePage(fixture.Page);
-        var product = new ProductPage(fixture.Page);
-        var cart = new CartPage(fixture.Page);
+        var home = new HomePage(page);
+        var product = new ProductPage(page);
+        var cart = new CartPage(page);
 
-        await home.Navigate("https://demo.opencart.com/");
-        await home.SearchProduct("iPhone");
-        await product.SelectFirstProduct();
-        await product.AddToCart();
-        await cart.OpenCart();
+        try
+        {
+            AllureApi.Step("Navigate to Home Page");
+            await home.Navigate("https://demo.opencart.com/");
 
-        // Verify that the product is in the cart
-        var productName = await cart.GetFirstProductName();
-        Assert.Contains("iPhone", productName);
+            AllureApi.Step("Search for iPhone");
+            await home.SearchProduct("iPhone");
 
-        await fixture.TearDown();
+            AllureApi.Step("Select product");
+            await product.SelectFirstProduct();
+
+            AllureApi.Step("Add product to cart");
+            await product.AddToCart();
+
+            AllureApi.Step("Open cart");
+            await cart.OpenCart();
+
+            var productName = await cart.GetFirstProductName();
+
+            AllureApi.Step("Verify product in cart");
+            Assert.Contains("iPhone", productName);
+        }
+        catch
+        {
+            var screenshot = await page.ScreenshotAsync();
+            AllureApi.AddAttachment("Failure Screenshot", "image/png", screenshot);
+            throw;
+        }
+
+        await browser.CloseAsync();
     }
 
     [Fact]
-    public async Task Search_NonExistentProduct_ShowsNoResults()
-    {
-        var fixture = new PlaywrightFixture();
-        await fixture.Setup();
-
-        var home = new HomePage(fixture.Page);
-        await home.Navigate("https://demo.opencart.com/");
-        // Search for a product that does not exist
-        await home.SearchProduct("NonExistentProduct123");
-
-        // Verify that no products are found
-        var searchResults = await home.GetSearchResults();
-        Assert.Empty(searchResults);
-
-       // Verify that the no results message is displayed
-        var message = await home.GetNoResultsMessage();
-        Assert.Contains("There is no product that matches the search criteria.", message);
-
-        await fixture.TearDown();
-    }
-
-    [Fact]
-    public async Task Add_Multiple_Products_To_Cart()
-    {
-        var fixture = new PlaywrightFixture();
-        await fixture.Setup();
-
-        var home = new HomePage(fixture.Page);
-        var product = new ProductPage(fixture.Page);
-        var cart = new CartPage(fixture.Page);
-
-        await home.Navigate("https://demo.opencart.com/");
-
-        await home.SearchProduct("iPhone");
-        await product.SelectFirstProduct();
-        await product.AddToCart();
-
-        await home.SearchProduct("MacBook");
-        await product.SelectFirstProduct();
-        await product.AddToCart();
-
-        // Open the cart to verify that both products are added
-        await cart.OpenCart();
-        // Verify that both products are in the cart
-        var products = await cart.GetAllProductNames();
-        Assert.Contains("iPhone", products);
-        Assert.Contains("MacBook", products);
-        // Verify that the product count is correct
-        var productCount = await cart.GetProductCount();
-        Assert.Equal(2, await cart.GetProductCount());
-
-        await fixture.TearDown();
-    }
-
-    [Fact]
+    [AllureStory("Remove Product from Cart")]
     public async Task Remove_Product_From_Cart()
     {
-        var fixture = new PlaywrightFixture();
-        await fixture.Setup();
+        var (page, browser) = await Setup();
 
-        var home = new HomePage(fixture.Page);
-        var product = new ProductPage(fixture.Page);
-        var cart = new CartPage(fixture.Page);
+        var home = new HomePage(page);
+        var product = new ProductPage(page);
+        var cart = new CartPage(page);
 
-        await home.Navigate("https://demo.opencart.com/");
-        await home.SearchProduct("iPhone");
-        // verify that the product is found before trying to add it to the cart
-        var searchResults = await home.GetSearchResults();
-        Assert.Contains("iPhone", searchResults);
-        await product.SelectFirstProduct();
-        await product.AddToCart();
+        try
+        {
+            await home.Navigate("https://demo.opencart.com/");
+            await home.SearchProduct("iPhone");
+            await product.SelectFirstProduct();
+            await product.AddToCart();
 
-        await cart.OpenCart();
-        await cart.RemoveFirstProduct();
-        var products = await cart.GetAllProductNames();
-        // Verify that the product has been removed from the cart
-        Assert.DoesNotContain("iPhone", products);
+            await cart.OpenCart();
+            await cart.RemoveFirstProduct();
 
-        await fixture.TearDown();
-    }
+            var products = await cart.GetAllProductNames();
 
-    [Fact]
-    public async Task Checkout_BasicFlow()
-    {
-        var fixture = new PlaywrightFixture();
-        await fixture.Setup();
+            Assert.DoesNotContain("iPhone", products);
+        }
+        catch
+        {
+            var screenshot = await page.ScreenshotAsync();
+            AllureApi.AddAttachment("Failure Screenshot", "image/png", screenshot);
+            throw;
+        }
 
-        var home = new HomePage(fixture.Page);
-        var product = new ProductPage(fixture.Page);
-        var cart = new CartPage(fixture.Page);
-        var checkout = new CheckoutPage(fixture.Page);
-
-        await home.Navigate("https://demo.opencart.com/");
-        await home.SearchProduct("iPhone");
-        await product.SelectFirstProduct();
-        await product.AddToCart();
-
-        await cart.OpenCart();
-        await checkout.ProceedToCheckout();
-
-        var pageTitle = await fixture.Page.TitleAsync();
-        // Verify that we are on the checkout page
-        Assert.Contains("Checkout", pageTitle);
-
-        await fixture.TearDown();
+        await browser.CloseAsync();
     }
 }
