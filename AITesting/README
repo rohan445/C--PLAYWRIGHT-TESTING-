@@ -1,1 +1,87 @@
+#  AI Test Generator (Anthropic + Playwright)
+
+## 📌 Overview
+
+This project is a simple tool that uses the Anthropic API to automatically generate **Playwright C# test scaffolds** from a given URL.
+
+It combines:
+
+* Web scraping (HTML extraction)
+* AI-based test generation
+* Playwright automation
+
+---
+
+## ⚙️ How It Works
+
+1. User provides a URL
+2. The tool fetches the page HTML
+3. HTML is sent to Anthropic Claude API
+4. AI generates a Playwright C# test
+5. Output is printed or saved as a `.cs` file
+
+---
+
+## 🚀 Usage
+
+```bash
+dotnet run
+```
+
+Enter a URL when prompted:
+
+```
+https://example.com
+```
+
+---
+
+## 🧠 Features
+
+* Auto-generates Playwright C# test code
+* Uses async/await patterns
+* Supports real-world UI flows (login, forms, navigation)
+* Easily extendable for Page Object Model
+
+---
+
+## ⚠️ Limitations
+
+* AI-generated selectors may not always be accurate
+* Requires manual validation and fixes
+* Large HTML pages are truncated due to token limits
+
+---
+
+## 💡 Future Improvements
+
+* Generate Page Object Model (POM) structure
+* Multi-test generation (login, cart, checkout)
+* CLI arguments support (`--url`, `--type`)
+* GitHub Actions integration
+
+---
+
+## 🔑 Setup
+
+* Add your Anthropic API key in code
+* Install dependencies:
+
+```bash
+dotnet add package HtmlAgilityPack
+```
+
+---
+
+## 🧪 Tech Stack
+
+* C# (.NET 8)
+* Playwright (test generation target)
+* Anthropic Claude API
+
+---
+
+## 📢 Note
+
+This project demonstrates how AI can assist in test automation, but human validation is essential for reliable and stable tests.
 
