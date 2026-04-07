@@ -1,0 +1,90 @@
+# OpenCart Playwright Tests (C# + XUnit)
+
+This project contains automated UI tests for the OpenCart demo site using **Playwright with C#** and **XUnit**. It follows the **Page Object Model (POM)** design pattern for better maintainability and scalability.
+
+---
+
+## 🚀 Tech Stack
+
+* C# (.NET 8)
+* Playwright for .NET
+* XUnit (Test Framework)
+
+---
+
+## 📁 Project Structure
+
+```
+OpenCartTests/
+│
+├─ Pages/              # Page Object Models (Login, Home, Product, Cart)
+├─ Fixtures/           # Playwright setup (browser, page initialization)
+├─ Tests/              # Test classes (Login, Shopping flows)
+└─ OpenCartTests.csproj
+```
+
+---
+
+## ✅ Test Scenarios Covered
+
+* Login with valid credentials
+* Login with invalid credentials
+* Login with empty inputs
+* Product search
+* Add to cart
+* Remove from cart
+* Basic checkout flow
+
+---
+
+## ⚙️ Setup & Installation
+
+1. Install .NET SDK (8.0+)
+
+2. Install dependencies:
+
+   ```
+   dotnet restore
+   ```
+
+3. Install Playwright browsers:
+
+   ```
+   dotnet tool install --global Microsoft.Playwright.CLI
+   playwright install
+   ```
+
+---
+
+## ▶️ Running Tests
+
+Run all tests:
+
+```
+dotnet test
+```
+
+Run a specific test:
+
+```
+dotnet test --filter "Login_With_Valid_Credentials"
+```
+
+---
+
+## 📝 Notes
+
+* Tests run in **headed mode** by default (`Headless = false`) for debugging.
+* Change to `Headless = true` in the fixture for CI/CD execution.
+* Make sure to run tests from the directory containing the `.csproj` file.
+
+---
+
+
+## 🌐 Test Target
+
+OpenCart Demo: https://demo.opencart.com/
+
+---
+
+This project demonstrates a clean automation framework using Playwright and can be extended for real-world e-commerce testing.
